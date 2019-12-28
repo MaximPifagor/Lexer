@@ -3,19 +3,26 @@ package MaxLexer.Readers;
 import MaxLexer.BaseReader;
 
 public class SymbolReader extends BaseReader {
-    private enum SymbolReaderEnum {
+
+    enum SymbolReaderStates
+    {
         START, SYMBOL
     }
 
-    private SymbolReaderEnum state;
-
-    public SymbolReader(){
+    static
+    {
+        initFinalState(SymbolReaderStates.SYMBOL);
+        initFinalState(SymbolReaderStates.START);
     }
 
+    private SymbolReaderStates state;
+
     @Override
-    protected boolean nextState(char val) {
-        if(state == SymbolReaderEnum.START){
-            state = SymbolReaderEnum.SYMBOL;
+    protected boolean nextState(char val)
+    {
+        if(state == SymbolReaderStates.START)
+        {
+            state = SymbolReaderStates.SYMBOL;
             return true;
         }
 
@@ -23,12 +30,14 @@ public class SymbolReader extends BaseReader {
     }
 
     @Override
-    protected boolean isFinalState() {
-        return state == SymbolReaderEnum.SYMBOL;
+    protected boolean isFinalState()
+    {
+        return isFinalState(state);
     }
 
     @Override
-    protected void reset() {
-        state = SymbolReaderEnum.START;
+    protected void reset()
+    {
+        state = SymbolReaderStates.START;
     }
 }

@@ -11,6 +11,7 @@ public class Test {
         lexer.register(new CommentReader());
         lexer.register(new SymbolReader());
         lexer.register(new SingleLineCommentReader());
+        lexer.register(new NumberReader());
 
         Token[] tokens = lexer.tokenize("56 /* fdgfdgdf\n dfsdfd */\n if(1>0) print('100') //Foo\n dfsfsdg //\n");
 

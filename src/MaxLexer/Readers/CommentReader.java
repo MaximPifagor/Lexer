@@ -1,49 +1,41 @@
 package MaxLexer.Readers;
 
 import MaxLexer.BaseReader;
-import javafx.util.Pair;
-import java.util.HashMap;
 
 public class CommentReader extends BaseReader {
-    private static enum CommentReaderEnum
+
+    enum CommentReaderStates
     {
         START, COMMENT_BEGIN_SLASH, COMMENT_BEGIN_STAR, COMMENT, COMMENT_END_STAR, COMMENT_END_SLASH
     }
 
-    private static HashMap<Pair<Character, CommentReaderEnum>, CommentReaderEnum> nextStateMap = new HashMap<Pair<Character, CommentReaderEnum>, CommentReaderEnum>();
-
     static
     {
-        put('/', CommentReaderEnum.START, CommentReaderEnum.COMMENT_BEGIN_SLASH);
-        put('*', CommentReaderEnum.COMMENT_BEGIN_SLASH, CommentReaderEnum.COMMENT);
-        put('*', CommentReaderEnum.COMMENT, CommentReaderEnum.COMMENT_END_STAR);
-        put('/', CommentReaderEnum.COMMENT_END_STAR, CommentReaderEnum.COMMENT_END_SLASH);
-        put('/', CommentReaderEnum.COMMENT_END_SLASH, CommentReaderEnum.COMMENT_BEGIN_SLASH);
+        initMapping('/', CommentReaderStates.START, CommentReaderStates.COMMENT_BEGIN_SLASH);
+        initMapping('*', CommentReaderStates.COMMENT_BEGIN_SLASH, CommentReaderStates.COMMENT_BEGIN_STAR);
+        initMapping('*', CommentReaderStates.COMMENT, CommentReaderStates.COMMENT_END_STAR);
+        initMapping('/', CommentReaderStates.COMMENT_END_STAR, CommentReaderStates.COMMENT_END_SLASH);
+        initMapping('/', CommentReaderStates.COMMENT_END_SLASH, CommentReaderStates.COMMENT_BEGIN_SLASH);
+        initFinalState(CommentReaderStates.START);
+        initFinalState(CommentReaderStates.COMMENT_END_SLASH);
     }
 
-    private static void put(Character currentChar, CommentReaderEnum currentStare, CommentReaderEnum nextState)
-    {
-        Pair<Character, CommentReaderEnum> key = new Pair<>(currentChar, currentStare);
-        nextStateMap.put(key, nextState);
-    }
-
-    private CommentReaderEnum state;
-
-    public CommentReader(){
-    }
+    private CommentReaderStates state;
 
     @Override
-    protected boolean nextState(char val) {
-        CommentReaderEnum nextState = nextStateMap.get(new Pair<>(val, state));
+    protected boolean nextState(char val)
+    {
+        CommentReaderStates nextState = getState(val, state);
 
-        if (nextState != null){
+        if (nextState != null)
+        {
             state = nextState;
             return true;
         }
 
-        if(state == CommentReaderEnum.COMMENT_END_STAR)
+        if(state == CommentReaderStates.COMMENT_END_STAR || state == CommentReaderStates.COMMENT_BEGIN_STAR)
         {
-            state = CommentReaderEnum.COMMENT;
+            state = CommentReaderStates.COMMENT;
             return true;
         }
 
@@ -54,17 +46,20 @@ public class CommentReader extends BaseReader {
         return false;
     }
 
-    private boolean isUnconditionalState(CommentReaderEnum state){
-        return state == CommentReaderEnum.COMMENT;
+    private boolean isUnconditionalState(CommentReaderStates state)
+    {
+        return state == CommentReaderStates.COMMENT;
     }
 
     @Override
-    protected boolean isFinalState() {
-        return state == CommentReaderEnum.COMMENT_END_SLASH || state == CommentReaderEnum.START;
+    protected boolean isFinalState()
+    {
+        return isFinalState(state);
     }
 
     @Override
-    protected void reset() {
-        state = CommentReaderEnum.START;
+    protected void reset()
+    {
+        state = CommentReaderStates.START;
     }
 }

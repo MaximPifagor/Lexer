@@ -3,15 +3,23 @@ package MaxLexer.Readers;
 import MaxLexer.BaseReader;
 
 public class WordReader extends BaseReader {
-    private enum WordReaderStates
+
+    enum WordReaderStates
     {
         START, LETTER
+    }
+
+    static
+    {
+        initFinalState(WordReaderStates.START);
+        initFinalState(WordReaderStates.LETTER);
     }
 
     private WordReaderStates state;
 
     @Override
-    protected boolean nextState(char val) {
+    protected boolean nextState(char val)
+    {
         if(Character.isLetter(val))
         {
             state = WordReaderStates.LETTER;
@@ -22,12 +30,14 @@ public class WordReader extends BaseReader {
     }
 
     @Override
-    protected boolean isFinalState() {
-        return state == WordReaderStates.LETTER || state == WordReaderStates.START;
+    protected boolean isFinalState()
+    {
+        return isFinalState(state);
     }
 
     @Override
-    protected void reset() {
+    protected void reset()
+    {
         state = WordReaderStates.START;
     }
 }

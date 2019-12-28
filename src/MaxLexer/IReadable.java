@@ -1,5 +1,5 @@
 package MaxLexer;
 
 public interface IReadable {
-    Token read(String str) throws Exception;
+    Token read(String str);
 }

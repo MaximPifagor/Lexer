@@ -1,27 +1,19 @@
 package MaxLexer.Readers;
 
 import MaxLexer.BaseReader;
-import javafx.util.Pair;
 
-import java.util.HashMap;
-
-public class NumberReader extends BaseReader<NumberReader.NumberReaderStates> {
+public class NumberReader extends BaseReader {
 
     enum NumberReaderStates
     {
-        START, NUMBER
+        START, NUMBER, COMMA
     }
-
-    private static HashMap<Pair<Character, NumberReaderStates>, NumberReaderStates> nextStateMap = new HashMap<>();
 
     static
     {
-    }
-
-    private static void put(Character currentChar, NumberReaderStates currentStare, NumberReaderStates nextState)
-    {
-        Pair<Character, NumberReaderStates> key = new Pair<>(currentChar, currentStare);
-        nextStateMap.put(key, nextState);
+        initMapping(',', NumberReaderStates.NUMBER, NumberReaderStates.COMMA);
+        initFinalState(NumberReaderStates.START);
+        initFinalState(NumberReaderStates.NUMBER);
     }
 
     private NumberReaderStates state;
@@ -33,6 +25,11 @@ public class NumberReader extends BaseReader<NumberReader.NumberReaderStates> {
             state = NumberReaderStates.NUMBER;
             return true;
         }
+
+        NumberReaderStates newState = getState(val, state);
+
+        if(newState != null)
+            state = newState;
 
         return false;
     }

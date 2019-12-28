@@ -3,17 +3,25 @@ package MaxLexer.Readers;
 import MaxLexer.BaseReader;
 
 public class WhiteSpaceReader extends BaseReader {
-    private enum WhiteSpaceStates{
+
+    enum WhiteSpaceReaderStates
+    {
         START, WHITESPACE
     }
 
-    private WhiteSpaceStates state;
+    static
+    {
+        initFinalState(WhiteSpaceReaderStates.START);
+        initFinalState(WhiteSpaceReaderStates.WHITESPACE);
+    }
+
+    private WhiteSpaceReaderStates state;
 
     @Override
     protected boolean nextState(char val) {
         if (Character.isWhitespace(val))
         {
-            state = WhiteSpaceStates.WHITESPACE;
+            state = WhiteSpaceReaderStates.WHITESPACE;
             return true;
         }
 
@@ -21,12 +29,14 @@ public class WhiteSpaceReader extends BaseReader {
     }
 
     @Override
-    protected boolean isFinalState() {
-        return state == WhiteSpaceStates.WHITESPACE || state == WhiteSpaceStates.START;
+    protected boolean isFinalState()
+    {
+        return isFinalState(state);
     }
 
     @Override
-    protected void reset() {
-        state = WhiteSpaceStates.START;
+    protected void reset()
+    {
+        state = WhiteSpaceReaderStates.START;
     }
 }
